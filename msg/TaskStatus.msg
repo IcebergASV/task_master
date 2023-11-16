@@ -1,0 +1,5 @@
+StartNavChannel task
+bool NOT_STARTED
+bool IN_PROGRESS
+bool FAILED
+bool COMPLETE
