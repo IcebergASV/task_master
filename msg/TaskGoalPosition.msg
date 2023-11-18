@@ -1,2 +1,2 @@
 StartNavChannel task
-geometry_msgs/PoseStamped goal_pose
+Waypoint goal_pose
