@@ -54,7 +54,6 @@ find_package(catkin REQUIRED COMPONENTS
    StartNavChannel.msg
    TaskGoalPosition.msg
    TaskStatus.msg
-   Waypoint.msg
  )
 
 
@@ -153,6 +152,10 @@ add_library(waypointSenderFunctionsLib
 add_executable(wp_filter_sender src/wp_filter_sender.cpp)
 target_link_libraries(wp_filter_sender ${catkin_LIBRARIES})
 add_dependencies(wp_filter_sender ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
+
+add_executable(fake_waypoint_pub src/fake_waypoint_pub.cpp)
+target_link_libraries(fake_waypoint_pub ${catkin_LIBRARIES})
+add_dependencies(fake_waypoint_pub ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the

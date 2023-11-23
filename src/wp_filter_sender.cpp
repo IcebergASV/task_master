@@ -52,10 +52,11 @@ void state_cb(const mavros_msgs::State::ConstPtr& msg)
    current_state = *msg;
  }
 
-void pose(const task_master::TaskGoalPosition& msg){
-    goal_pos.x = msg.goal_pose.x;
-    goal_pos.y = msg.goal_pose.y;
-    goal_pos.z = msg.goal_pose.z;
+// set goal pose 
+void goal_pose(const task_master::TaskGoalPosition& msg){
+    goal_pos.x = msg.x;
+    goal_pos.y = msg.y;
+    goal_pos.z = msg.z;
     goal_pos.psi = 0.0;
  }
 
@@ -69,7 +70,6 @@ float pose_cb(const nav_msgs::Odometry::ConstPtr& msg)
   float q3 = current_pose.pose.pose.orientation.z;
   float psi = atan2((2*(q0*q3 + q1*q2)), (1 - 2*(pow(q2,2) + pow(q3,2))) );
   float current_heading = psi*(180/M_PI);
-  //IS YAWING COUNTERCLOCKWISE POSITIVE?
   return current_heading;
 
 }
@@ -79,9 +79,8 @@ float get_current_heading()
  	return current_heading;
  }
 
-/**
-\ingroup control_functions
-Wait for connect is a function that will hold the program until communication with the FCU is established.
+
+/*
 @returns 0 - connected to fcu 
 @returns -1 - failed to connect to drone
 */
@@ -105,9 +104,8 @@ int wait4connect()
 	
 	
 }
+
 /**
-\ingroup control_functions
-Wait for strat will hold the program until the user signals the FCU to enther mode guided. This is typically done from a switch on the safety pilot’s remote or from the ground control station.
 @returns 0 - mission started
 @returns -1 - failed to start mission
 */
@@ -128,11 +126,7 @@ int wait4start()
 		return -1;	
 	}
 }
-/**
-\ingroup control_functions
-This function will create a local reference frame based on the starting location of the drone. This is typically done right before takeoff. This reference frame is what all of the the set destination commands will be in reference to.
-@returns 0 - frame initialized
-*/
+
 int initialize_local_frame()
 {
 	//set the orientation of the local reference frame
@@ -197,11 +191,7 @@ int arm()
 }
 
 
-/**
-\ingroup control_functions
-This function is called at the beginning of a program and will start of the communication links to the FCU. The function requires the program's ros nodehandle as an input 
-@returns n/a
-*/
+
 int init_publisher_subscriber(ros::NodeHandle controlnodehandle)
 {
 	local_pos_pub = controlnodehandle.advertise<geometry_msgs::PoseStamped>("mavros/setpoint_position/local", 10);
@@ -219,17 +209,16 @@ int main(int argc, char** argv)
 	//initialize ros 
 	ros::init(argc, argv, "wp_filter_sender");
 	ros::NodeHandle nh;
-    goal_pos_sub = nh.subscribe("/goal_position",10,pose);
-    ros::spin();
 
-	
+	//Subcribe to goal position
+    goal_pos_sub = nh.subscribe("goal_position", 10, goal_pose);
+
 	//initialize control publisher/subscribers
 	init_publisher_subscriber(nh);
 
   	// wait for FCU connection
 	wait4connect();
 
-    
 	//wait for used to switch to mode GUIDED
 	wait4start();
 
@@ -237,18 +226,8 @@ int main(int argc, char** argv)
     initialize_local_frame();
 
 	// arm boat 
-	//arm();
+	arm();
 
-   
-
-
-	//specify some waypoints 
-	// std::vector<waypoint> waypointList;
-	//waypoint nextWayPoint; 
-	//nextWayPoint.x = goal_pos.x;
-	//nextWayPoint.y = goal_pos.y;
-	//nextWayPoint.z = goal_pos.z;
-	//nextWayPoint.psi = 0;
 
 	ros::Rate rate(2.0);
 
@@ -260,8 +239,6 @@ int main(int argc, char** argv)
 
 		desired_waypoint = set_destination(goal_pos.x, goal_pos.y, goal_pos.z, goal_pos.psi, correction_heading, local_desired_heading, correction_vector, local_offset_pose, desired_waypoint);
 		local_pos_pub.publish(desired_waypoint);
-        ROS_DEBUG("current pose x %F y %f z %f", (current_pose.pose.pose.position.y), -1 *(current_pose.pose.pose.position.x), (current_pose.pose.pose.position.z));
-		
 	}
 	return 0;
 }
