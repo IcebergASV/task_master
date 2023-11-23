@@ -21,22 +21,18 @@ public:
     void spin() {
         ros::Rate rate(10);
         while (ros::ok()) {
-            startTask(task_master::Task::NAVIGATION_CHANNEL);
+            task_to_execute_.publish(current_status_);
             ros::spinOnce();
             rate.sleep();
         }
     }
 
-    void startTask(int new_task) {
-        while (current_status_.status != task_master::TaskStatus::IN_PROGRESS) {
-            ROS_INFO_STREAM("Publishing initial task, task " << new_task);
-            // allows us to set what task we want to run
-            task_master::TaskStatus task;
-            task.task.current_task = new_task;
-            task.status = task_master::TaskStatus::NOT_STARTED;
-            task_to_execute_.publish(task);
-        }
+    void setDefaultStatus(int new_task) {
+        current_status_.status = task_master::TaskStatus::NOT_STARTED;
+        current_status_.task.current_task = new_task;
+        ROS_INFO("Set default task.");
     }
+
 
 private:
 
@@ -48,13 +44,15 @@ private:
     task_master::TaskStatus current_status_;
 
     void taskStatusCallback(const task_master::TaskStatus msg) {
+        ROS_INFO_STREAM("IN TASKSTATUS CALLBACK");
         current_status_ = msg;
         if(msg.status == task_master::TaskStatus::FAILED || msg.status == task_master::TaskStatus::COMPLETE) {
             // when task fails or completes, we publish task_not_set
-            task_master::Task task;
-            task.current_task = task_master::Task::TASK_NOT_SET;
+            task_master::TaskStatus taskStatus;
+            taskStatus.task.current_task = task_master::Task::TASK_NOT_SET;
+            taskStatus.status = task_master::TaskStatus::COMPLETE;
             ROS_INFO("Publishing task to execute.");
-            task_to_execute_.publish(task);
+            task_to_execute_.publish(taskStatus);
         }
     }
 };
@@ -66,8 +64,8 @@ int main(int argc, char** argv) {
 
     TaskController task_controller;
 
-    //task_controller.startTask(1);    
-    //task_controller.startTask(task_master::Task::NAVIGATION_CHANNEL);    
+    task_controller.setDefaultStatus(task_master::Task::NAVIGATION_CHANNEL);
+    
     task_controller.spin();
 
     return 0;
