@@ -149,6 +149,14 @@ add_library(waypointSenderFunctionsLib
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/task_master_node.cpp)
 
+add_executable(wp_filter_sender src/wp_filter_sender.cpp)
+target_link_libraries(wp_filter_sender ${catkin_LIBRARIES})
+add_dependencies(wp_filter_sender ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
+
+add_executable(fake_waypoint_pub src/fake_waypoint_pub.cpp)
+target_link_libraries(fake_waypoint_pub ${catkin_LIBRARIES})
+add_dependencies(fake_waypoint_pub ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
+
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -160,9 +168,9 @@ add_library(waypointSenderFunctionsLib
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(wp_filter_sender
+  waypointSenderFunctionsLib
+)
 
 #############
 ## Install ##

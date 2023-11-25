@@ -1,2 +1,4 @@
 StartNavChannel task
-geometry_msgs/PoseStamped goal_pose
+float32 x
+float32 y
+float32 z
