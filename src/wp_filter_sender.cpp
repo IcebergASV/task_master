@@ -109,7 +109,7 @@ int wait4connect()
 @returns 0 - mission started
 @returns -1 - failed to start mission
 */
-int wait4start()
+int wait4Guided()
 {
 	ROS_INFO("Waiting for user to set mode to GUIDED");
 	while(ros::ok() && current_state.mode != "GUIDED")
@@ -198,9 +198,7 @@ int init_publisher_subscriber(ros::NodeHandle controlnodehandle)
 	currentPos = controlnodehandle.subscribe<nav_msgs::Odometry>("/mavros/global_position/local", 10, pose_cb);
 	state_sub = controlnodehandle.subscribe<mavros_msgs::State>("mavros/state", 10, state_cb);
 	arming_client = controlnodehandle.serviceClient<mavros_msgs::CommandBool>("mavros/cmd/arming");
-	set_mode_client = controlnodehandle.serviceClient<mavros_msgs::SetMode>("/mavros/set_mode");
-    //goal_pos_sub =controlnodehandle.subscribe<task_master::TaskGoalPosition>("/hi",10,pose);
-    
+	set_mode_client = controlnodehandle.serviceClient<mavros_msgs::SetMode>("/mavros/set_mode");  
 }
 
 
@@ -208,6 +206,10 @@ int main(int argc, char** argv)
 {
 	//initialize ros 
 	ros::init(argc, argv, "wp_filter_sender");
+
+    if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Info))
+        ros::console::notifyLoggerLevelsChanged();
+
 	ros::NodeHandle nh;
 
 	//Subcribe to goal position

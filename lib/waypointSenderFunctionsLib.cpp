@@ -82,7 +82,6 @@ geometry_msgs::PoseStamped set_destination(float x, float y, float z, float psi,
 	x = Xlocal + correction_vector.position.x;
 	y = Ylocal + correction_vector.position.y;
 	z = Zlocal + correction_vector.position.z;
-	//ROS_INFO("Destination set to x: %f y: %f z: %f origin frame", x, y, z);
 
 	waypoint.pose.position.x = -x;
 	waypoint.pose.position.y = -y;
