@@ -1,4 +1,4 @@
-StartNavChannel task
+Task task
 float32 x
 float32 y
 float32 z
