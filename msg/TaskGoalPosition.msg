@@ -1,4 +1,2 @@
-StartNavChannel task
-float32 x
-float32 y
-float32 z
+Task task
+geometry_msgs/Point point
