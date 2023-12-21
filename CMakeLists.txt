@@ -51,9 +51,9 @@ find_package(catkin REQUIRED COMPONENTS
 
  add_message_files(
    FILES
-   Task.msg
    TaskGoalPosition.msg
    TaskStatus.msg
+   Task.msg
  )
 
 
@@ -126,6 +126,12 @@ catkin_package(
 include_directories(
  include
   ${catkin_INCLUDE_DIRS}
+)
+
+add_executable(task_ctrl src/task_ctrl.cpp)
+add_dependencies(task_ctrl ${task_ctrl_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(task_ctrl
+  ${catkin_LIBRARIES}
 )
 
 ## Declare a C++ library

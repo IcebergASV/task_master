@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="task_master" type="task_ctrl" name="task_ctrl_node" output="screen"/>
+</launch>
