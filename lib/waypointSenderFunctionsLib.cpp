@@ -18,6 +18,7 @@
 
 #include "waypointSenderFunctionsLib.h"
 
+// TODO: Test and fix this transformation if necessary 
 geometry_msgs::Point enu_2_local(nav_msgs::Odometry current_pose_enu)
 {
   float x = current_pose_enu.pose.pose.position.x;
@@ -39,12 +40,11 @@ geometry_msgs::Point get_current_location(nav_msgs::Odometry current_pose)
 	return current_pos_local;
 }
 
-geometry_msgs::PoseStamped set_heading(float heading, float local_desired_heading, float correction_heading, geometry_msgs::PoseStamped waypoint)
+// TODO: Fix this for adjusted corrdinate transformation and boat instead of drone 
+geometry_msgs::PoseStamped set_heading(float heading, geometry_msgs::PoseStamped waypoint)
 {
-  local_desired_heading = heading; 
-  heading = heading + correction_heading;
-  
-  ROS_INFO("Desired Heading %f ", local_desired_heading);
+
+  ROS_INFO("Desired Heading %f ", heading);
   float yaw = heading*(M_PI/180);
   float pitch = 0;
   float roll = 0;
@@ -69,23 +69,17 @@ geometry_msgs::PoseStamped set_heading(float heading, float local_desired_headin
   return waypoint;
 }
 
-geometry_msgs::PoseStamped set_destination(float x, float y, float z, float psi, float correction_heading, float local_desired_heading, geometry_msgs::Pose correction_vector, geometry_msgs::Point local_offset_pose, geometry_msgs::PoseStamped waypoint)
+geometry_msgs::PoseStamped set_destination(float x, float y, float psi, geometry_msgs::PoseStamped waypoint)
 {
-	waypoint = set_heading(psi, local_desired_heading, correction_heading, waypoint);
 
 	//transform map to local
 	float deg2rad = (M_PI/180);
-	float Xlocal = x*cos((correction_heading - 90)*deg2rad) - y*sin((correction_heading - 90)*deg2rad);
-	float Ylocal = x*sin((correction_heading - 90)*deg2rad) + y*cos((correction_heading - 90)*deg2rad);
-	float Zlocal = z;
+	float Xlocal = x*cos((90)*deg2rad) - y*sin((90)*deg2rad);
+	float Ylocal = x*sin((90)*deg2rad) + y*cos((90)*deg2rad);
 
-	x = Xlocal + correction_vector.position.x;
-	y = Ylocal + correction_vector.position.y;
-	z = Zlocal + correction_vector.position.z;
-
-	waypoint.pose.position.x = -x;
-	waypoint.pose.position.y = -y;
-	waypoint.pose.position.z = z;
+	waypoint.pose.position.x = Xlocal;
+	waypoint.pose.position.y = Ylocal;
+	waypoint.pose.position.z = 0;
 
 	return waypoint;
 }

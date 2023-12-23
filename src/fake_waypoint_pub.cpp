@@ -7,16 +7,14 @@ void fake_waypoint() {
     ros::NodeHandle nh("");
     ros::NodeHandle private_nh_("~");
 
-  
-
     ros::Publisher pub = nh.advertise<task_master::TaskGoalPosition>("goal_position", 1);
     ros::Rate rate(1);
     task_master::TaskGoalPosition msg;
 
     // Message
-    msg.x = 15;
-    msg.y = 0; 
-    msg.z = 0;
+    msg.point.x = 10;
+    msg.point.y = 15; 
+    msg.point.z = 0;
 
     while (ros::ok()) {
         ROS_INFO_STREAM(msg);
