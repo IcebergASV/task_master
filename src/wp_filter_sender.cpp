@@ -16,7 +16,6 @@
 #include <ros/duration.h>
 #include <iostream>
 
-#include <task_master/Waypoint.h>
 #include <task_master/TaskGoalPosition.h>
 
 #include "waypointSenderFunctionsLib.h"
