@@ -71,7 +71,7 @@ geometry_msgs::PoseStamped set_heading(float heading, geometry_msgs::PoseStamped
 
 geometry_msgs::PoseStamped set_destination(float x, float y, float psi, geometry_msgs::PoseStamped waypoint)
 {
-
+    ROS_DEBUG_STREAM("HELP");
 	//transform map to local
 	float deg2rad = (M_PI/180);
 	float Xlocal = x*cos((90)*deg2rad) - y*sin((90)*deg2rad);

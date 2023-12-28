@@ -54,6 +54,7 @@ find_package(catkin REQUIRED COMPONENTS
    TaskGoalPosition.msg
    TaskStatus.msg
    Task.msg
+   Waypoint.msg
  )
 
 
