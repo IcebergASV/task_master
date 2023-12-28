@@ -1,0 +1,5 @@
+<launch>
+    <include file="$(find task_master)/launch/task_master.launch"></include>
+    <include file="$(find prop_mapper)/launch/prop_mapper_sim.launch"></include>
+    <include file="$(find nav_channel)/launch/nav_channel_sim.launch"></include>
+</launch>
