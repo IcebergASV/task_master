@@ -50,24 +50,24 @@ void state_cb(const mavros_msgs::State::ConstPtr& msg)
  }
 
 // set goal pose 
-void goal_pose(const task_master::TaskGoalPosition& msg){
+void goal_pose(const task_master::TaskGoalPosition::ConstPtr& msg){
 
 	ROS_DEBUG_STREAM("help4");
 
 	ROS_DEBUG_STREAM(TAG << "task goal pos" << msg);
 	// Check if msg is from correct task 
-	if(current_task_to_execute == msg.task.current_task){
-		goal_pos.x = msg.point.x;
-		goal_pos.y = msg.point.y;
-		goal_pos.z = msg.point.z;
+	if(current_task_to_execute == msg->task.current_task){
+		goal_pos.x = msg->point.x;
+		goal_pos.y = msg->point.y;
+		goal_pos.z = msg->point.z;
 		goal_pos.psi = 0.0;
 	}
  }
 
 // Get current task to execute 
- void get_current_task(const task_master::TaskStatus& msg){
+ void get_current_task(const task_master::Task::ConstPtr& msg){
 
-	current_task_to_execute = msg.task.current_task;
+	current_task_to_execute = msg->current_task;
  }
 
 float pose_cb(const nav_msgs::Odometry::ConstPtr& msg)
@@ -159,7 +159,7 @@ int main(int argc, char** argv)
 	ros::init(argc, argv, "wp_filter_sender");
 
 	// Set logging level
-    if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug)){
+    if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Info)){
    		ros::console::notifyLoggerLevelsChanged();
 	}
      
@@ -172,7 +172,7 @@ int main(int argc, char** argv)
 	arming_client = nh.serviceClient<mavros_msgs::CommandBool>("mavros/cmd/arming");
 	set_mode_client = nh.serviceClient<mavros_msgs::SetMode>("/mavros/set_mode"); 
     goal_pos_sub = nh.subscribe<task_master::TaskGoalPosition>("/task_goal_position", 10, goal_pose);
-	current_task = nh.subscribe<task_master::TaskStatus>("/task_to_execute", 10, get_current_task);
+	current_task = nh.subscribe<task_master::Task>("/task_to_execute", 10, get_current_task);
 
   	// Connect to FCU
 	wait4connect();
