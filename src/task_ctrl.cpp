@@ -30,7 +30,7 @@ public:
     void setDefaultStatus(int new_task) {
         current_task_.current_task = task_master::TaskStatus::NOT_STARTED;
         current_task_.current_task = new_task;
-        ROS_INFO("Set default task and task status.");
+        ROS_INFO_STREAM(TAG << "Set default task and task status.");
     }
 
 
@@ -42,7 +42,7 @@ private:
     ros::Publisher task_to_execute_;
 
     task_master::Task current_task_;
-    std::string TAG = "Task_CONTROLLER: ";
+    std::string TAG = "TASK_CONTROLLER: ";
 
     void taskStatusCallback(const task_master::TaskStatus msg) {
         ROS_DEBUG_STREAM(TAG << "taskStatusCallback");
@@ -51,10 +51,10 @@ private:
             // when task fails or completes, we publish task_not_set
             current_task_.current_task = task_master::Task::TASK_NOT_SET;
             if (msg.status == task_master::TaskStatus::FAILED) {
-                ROS_INFO("Task failed.");
+                ROS_INFO_STREAM( TAG << "Task failed.");
             }
             else {
-                ROS_INFO("Task completed.");
+                ROS_INFO_STREAM(TAG << "Task completed.");
             }
         }
 
