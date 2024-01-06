@@ -189,7 +189,7 @@ int main(int argc, char** argv)
 	{
 		ros::spinOnce();
 		rate.sleep();
-		desired_waypoint = set_destination(goal_pos.x, goal_pos.y, goal_pos.psi, desired_waypoint);
+		desired_waypoint = set_destination(goal_pos.x, goal_pos.y, goal_pos.psi);
 		ROS_DEBUG_STREAM(TAG << " about to publish");
 		local_pos_pub.publish(desired_waypoint);
 	}

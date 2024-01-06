@@ -41,7 +41,7 @@ geometry_msgs::Point get_current_location(nav_msgs::Odometry current_pose)
 }
 
 // TODO: Fix this for adjusted corrdinate transformation and boat instead of drone 
-geometry_msgs::PoseStamped set_heading(float heading, geometry_msgs::PoseStamped waypoint)
+geometry_msgs::PoseStamped set_heading(float heading)
 {
 
   ROS_INFO("Desired Heading %f ", heading);
@@ -60,7 +60,8 @@ geometry_msgs::PoseStamped set_heading(float heading, geometry_msgs::PoseStamped
   float qx = cy * sr * cp - sy * cr * sp;
   float qy = cy * cr * sp + sy * sr * cp;
   float qz = sy * cr * cp - cy * sr * sp;
-
+  
+  geometry_msgs::PoseStamped waypoint;
   waypoint.pose.orientation.w = qw;
   waypoint.pose.orientation.x = qx;
   waypoint.pose.orientation.y = qy;
@@ -69,14 +70,17 @@ geometry_msgs::PoseStamped set_heading(float heading, geometry_msgs::PoseStamped
   return waypoint;
 }
 
-geometry_msgs::PoseStamped set_destination(float x, float y, float psi, geometry_msgs::PoseStamped waypoint)
+geometry_msgs::PoseStamped set_destination(float x, float y, float psi)
 {
+
+  set_heading(psi);
 	//transform map to local
 	float deg2rad = (M_PI/180);
 	float Xlocal = x*cos((90)*deg2rad) - y*sin((90)*deg2rad);
 	float Ylocal = x*sin((90)*deg2rad) + y*cos((90)*deg2rad);
 
-	waypoint.pose.position.x = Xlocal;
+	geometry_msgs::PoseStamped waypoint;
+  waypoint.pose.position.x = Xlocal;
 	waypoint.pose.position.y = Ylocal;
 	waypoint.pose.position.z = 0;
 
