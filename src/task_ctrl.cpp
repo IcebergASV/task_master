@@ -15,22 +15,22 @@ public:
         // ROS publishers
 
         // task_to_execute determines which task should be running
-        task_to_execute_ = nh_.advertise<task_master::TaskStatus>("task_to_execute", 10);
+        task_to_execute_ = nh_.advertise<task_master::Task>("task_to_execute", 10);
     }
 
     void spin() {
         ros::Rate rate(10);
         while (ros::ok()) {
-            task_to_execute_.publish(current_status_);
+            task_to_execute_.publish(current_task_);
             ros::spinOnce();
             rate.sleep();
         }
     }
 
     void setDefaultStatus(int new_task) {
-        current_status_.status = task_master::TaskStatus::NOT_STARTED;
-        current_status_.task.current_task = new_task;
-        ROS_INFO("Set default task and task status.");
+        current_task_.current_task = task_master::TaskStatus::NOT_STARTED;
+        current_task_.current_task = new_task;
+        ROS_INFO_STREAM(TAG << "Set default task and task status.");
     }
 
 
@@ -41,28 +41,29 @@ private:
     ros::Subscriber task_status_sub_;
     ros::Publisher task_to_execute_;
 
-    task_master::TaskStatus current_status_;
+    task_master::Task current_task_;
+    std::string TAG = "TASK_CONTROLLER: ";
 
     void taskStatusCallback(const task_master::TaskStatus msg) {
-        current_status_ = msg;
+        ROS_DEBUG_STREAM(TAG << "taskStatusCallback");
+        //current_status_ = msg;
         if(msg.status == task_master::TaskStatus::FAILED || msg.status == task_master::TaskStatus::COMPLETE) {
             // when task fails or completes, we publish task_not_set
-            task_master::TaskStatus taskStatus;
-            taskStatus.task.current_task = task_master::Task::TASK_NOT_SET;
-            taskStatus.status = msg.status;
-            if (taskStatus.status == task_master::TaskStatus::FAILED) {
-                ROS_INFO("Task failed.");
+            current_task_.current_task = task_master::Task::TASK_NOT_SET;
+            if (msg.status == task_master::TaskStatus::FAILED) {
+                ROS_INFO_STREAM( TAG << "Task failed.");
             }
             else {
-                ROS_INFO("Task completed.");
+                ROS_INFO_STREAM(TAG << "Task completed.");
             }
         }
+
     }
 };
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "task_ctrl_node");
-    if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Info))
+    if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
         ros::console::notifyLoggerLevelsChanged();
 
     TaskController task_controller;

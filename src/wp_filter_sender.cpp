@@ -17,6 +17,8 @@
 #include <iostream>
 
 #include <task_master/TaskGoalPosition.h>
+#include <task_master/TaskStatus.h>
+#include <task_master/Waypoint.h>
 
 #include "waypointSenderFunctionsLib.h"
 
@@ -29,7 +31,7 @@ nav_msgs::Odometry current_pose;
 geometry_msgs::PoseStamped desired_waypoint;
 int current_task_to_execute;
 
-waypoint goal_pos;
+task_master::Waypoint goal_pos;
 
 ros::Publisher local_pos_pub;
 ros::Subscriber currentPos;
@@ -39,6 +41,8 @@ ros::ServiceClient set_mode_client;
 ros::Subscriber goal_pos_sub;
 ros::Subscriber current_task;
 
+std::string TAG = "WP_FILTERSENDER: ";
+
 //get armed state
 void state_cb(const mavros_msgs::State::ConstPtr& msg)
  {
@@ -46,21 +50,22 @@ void state_cb(const mavros_msgs::State::ConstPtr& msg)
  }
 
 // set goal pose 
-void goal_pose(const task_master::TaskGoalPosition& msg){
+void goal_pose(const task_master::TaskGoalPosition::ConstPtr& msg){
 
+	ROS_DEBUG_STREAM(TAG << "task goal pos" << msg);
 	// Check if msg is from correct task 
-	if(current_task_to_execute == msg.task.current_task){
-		goal_pos.x = msg.point.x;
-		goal_pos.y = msg.point.y;
-		goal_pos.z = msg.point.z;
+	if(current_task_to_execute == msg->task.current_task){
+		goal_pos.x = msg->point.x;
+		goal_pos.y = msg->point.y;
+		goal_pos.z = msg->point.z;
 		goal_pos.psi = 0.0;
 	}
  }
 
 // Get current task to execute 
- void get_current_task(const task_master::Task& msg){
+ void get_current_task(const task_master::Task::ConstPtr& msg){
 
-	current_task_to_execute = msg.current_task;
+	current_task_to_execute = msg->current_task;
  }
 
 float pose_cb(const nav_msgs::Odometry::ConstPtr& msg)
@@ -164,8 +169,8 @@ int main(int argc, char** argv)
 	state_sub = nh.subscribe<mavros_msgs::State>("mavros/state", 10, state_cb);
 	arming_client = nh.serviceClient<mavros_msgs::CommandBool>("mavros/cmd/arming");
 	set_mode_client = nh.serviceClient<mavros_msgs::SetMode>("/mavros/set_mode"); 
-    goal_pos_sub = nh.subscribe("goal_position", 10, goal_pose);
-	current_task = nh.subscribe("task_to_execute", 10, get_current_task);
+    goal_pos_sub = nh.subscribe<task_master::TaskGoalPosition>("/task_goal_position", 10, goal_pose);
+	current_task = nh.subscribe<task_master::Task>("/task_to_execute", 10, get_current_task);
 
   	// Connect to FCU
 	wait4connect();
@@ -184,8 +189,8 @@ int main(int argc, char** argv)
 	{
 		ros::spinOnce();
 		rate.sleep();
-
 		desired_waypoint = set_destination(goal_pos.x, goal_pos.y, goal_pos.psi, desired_waypoint);
+		ROS_DEBUG_STREAM(TAG << " about to publish");
 		local_pos_pub.publish(desired_waypoint);
 	}
 	return 0;
