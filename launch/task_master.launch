@@ -2,5 +2,6 @@
     <node pkg="task_master" type="task_ctrl" name="task_ctrl_node" output="screen"/>
     <node pkg="task_master" type="wp_filter_sender" name="wp_filter_sender" output="screen"/>
     <node pkg="task_master" type="mavros_2_gazebo_conversion" name="mavros_2_gazebo_conversion" output="screen"/>
+    <node pkg="task_master" type="fake_waypoint_pub" name="fake_waypoint_pub" output="screen"/>
 </launch>
 
