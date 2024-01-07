@@ -44,8 +44,12 @@ geometry_msgs::Point get_current_location(nav_msgs::Odometry current_pose)
 geometry_msgs::PoseStamped set_heading(float heading)
 {
 
-  ROS_INFO("Desired Heading %f ", heading);
-  float yaw = heading*(M_PI/180);
+  ROS_DEBUG_STREAM(" Gazebo Heading: " << heading);
+  float yaw = heading*(M_PI/180) + (M_PI/2); // plus 1.57 to convert from gazebo to mavros
+
+  ROS_DEBUG_STREAM( "Mavros Heading " << yaw * (180/M_PI));
+
+
   float pitch = 0;
   float roll = 0;
 
@@ -72,14 +76,17 @@ geometry_msgs::PoseStamped set_heading(float heading)
 
 geometry_msgs::PoseStamped set_destination(float x, float y, float psi)
 {
-
-  set_heading(psi);
+  ROS_DEBUG_STREAM("WP_LIB: " << "X " << x);
+  ROS_DEBUG_STREAM("WP_LIB: " << "Y " << y);
+  geometry_msgs::PoseStamped waypoint = set_heading(psi);
 	//transform map to local
 	float deg2rad = (M_PI/180);
 	float Xlocal = x*cos((90)*deg2rad) - y*sin((90)*deg2rad);
 	float Ylocal = x*sin((90)*deg2rad) + y*cos((90)*deg2rad);
 
-	geometry_msgs::PoseStamped waypoint;
+  ROS_DEBUG_STREAM("WP_LIB: " << "X local: " << Xlocal);
+  ROS_DEBUG_STREAM("WP_LIB: " << "Y local: " << Ylocal);
+
   waypoint.pose.position.x = Xlocal;
 	waypoint.pose.position.y = Ylocal;
 	waypoint.pose.position.z = 0;
