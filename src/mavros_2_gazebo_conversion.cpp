@@ -104,7 +104,7 @@ geometry_msgs::PoseStamped convert_2_gazebo(geometry_msgs::PoseStamped currentPo
     // convert quaternion to euler angles
     EulerAngles orientation_e = ToEulerAngles(orientation_q);
 
-    ROS_DEBUG_STREAM(TAG << "Mavros Heading: " << orientation_e.yaw);
+    ROS_DEBUG_STREAM(TAG << "Mavros Heading: " << orientation_e.yaw*(180/M_PI));
 
     // shift yaw by 90 degrees
     orientation_e.yaw = orientation_e.yaw - (M_PI/2);
@@ -113,7 +113,7 @@ geometry_msgs::PoseStamped convert_2_gazebo(geometry_msgs::PoseStamped currentPo
     orientation_q = ToQuaternion(orientation_e);
 
     EulerAngles converted_heading = ToEulerAngles(orientation_q);
-    ROS_DEBUG_STREAM(TAG << "Gazebo Heading: " << converted_heading.yaw);
+    ROS_DEBUG_STREAM(TAG << "Gazebo Heading: " << converted_heading.yaw*(180/M_PI));
 
     // Update pose with shifted orientation
     convertedPos.pose.orientation.w = orientation_q.w;
