@@ -1,6 +1,8 @@
 <launch>
     <node pkg="task_master" type="task_ctrl" name="task_ctrl_node" output="screen"/>
-    <node pkg="task_master" type="wp_filter_sender" name="wp_filter_sender" output="screen"/>
+    <node pkg="task_master" type="wp_filter_sender" name="wp_filter_sender" output="screen">
+        <remap from="/mavros/local_position/pose" to="/gazebo_conversion/mavros/local_position/pose"/>
     <node pkg="task_master" type="mavros_2_gazebo_conversion" name="mavros_2_gazebo_conversion" output="screen"/>
+    <node pkg="task_master" type="gazebo_2_mavros_conversion" name="gazebo_2_mavros_conversion" output="screen"/>
 </launch>
 
