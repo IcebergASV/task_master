@@ -69,15 +69,11 @@ geometry_msgs::PoseStamped set_heading(float heading, geometry_msgs::PoseStamped
   return waypoint;
 }
 
-geometry_msgs::PoseStamped set_destination(float x, float y, float psi, geometry_msgs::PoseStamped waypoint)
-{
-	//transform map to local
-	float deg2rad = (M_PI/180);
-	float Xlocal = x*cos((90)*deg2rad) - y*sin((90)*deg2rad);
-	float Ylocal = x*sin((90)*deg2rad) + y*cos((90)*deg2rad);
-
-	waypoint.pose.position.x = Xlocal;
-	waypoint.pose.position.y = Ylocal;
+geometry_msgs::PoseStamped set_destination(float x, float y, float psi)
+{  
+  geometry_msgs::PoseStamped waypoint;
+	waypoint.pose.position.x = x;
+	waypoint.pose.position.y = y;
 	waypoint.pose.position.z = 0;
 
 	return waypoint;

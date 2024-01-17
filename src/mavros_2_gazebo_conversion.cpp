@@ -1,24 +1,6 @@
-#include <mavros_msgs/CommandTOL.h>
-#include <mavros_msgs/State.h>
-#include <nav_msgs/Odometry.h>
-#include <geometry_msgs/Pose.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <cmath>
-#include <math.h>
 #include <ros/ros.h>
-#include <std_msgs/Float64.h>
-#include <std_msgs/String.h>
-#include <mavros_msgs/CommandBool.h>
-#include <mavros_msgs/SetMode.h>
-#include <mavros_msgs/PositionTarget.h>
-#include <unistd.h>
-#include <vector>
-#include <ros/duration.h>
-#include <iostream>
-
-#include <task_master/TaskGoalPosition.h>
-
-
 
 ros::Subscriber currentPosMavRos;
 ros::Publisher currentPosGazebo;
@@ -100,7 +82,7 @@ geometry_msgs::PoseStamped convertMavrosToGazeboPose(geometry_msgs::PoseStamped 
 int main(int argc, char** argv) {
 
     ros::init(argc, argv, "mavros_2_gazebo_conversion");
-    if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
+    if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Info))
         ros::console::notifyLoggerLevelsChanged();
     ros::NodeHandle nh;
 
