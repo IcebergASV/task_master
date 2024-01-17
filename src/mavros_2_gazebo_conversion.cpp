@@ -100,7 +100,7 @@ geometry_msgs::PoseStamped convertMavrosToGazeboPose(geometry_msgs::PoseStamped 
 int main(int argc, char** argv) {
 
     ros::init(argc, argv, "mavros_2_gazebo_conversion");
-    if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
+    if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Info))
         ros::console::notifyLoggerLevelsChanged();
     ros::NodeHandle nh;
 

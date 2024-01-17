@@ -82,12 +82,12 @@ geometry_msgs::PoseStamped convertGazeboToMavrosPose(geometry_msgs::PoseStamped 
 int main(int argc, char** argv) {
 
     ros::init(argc, argv, "gazebo_2_mavros_conversion");
-    if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
+    if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Info))
         ros::console::notifyLoggerLevelsChanged();
     ros::NodeHandle nh;
 
-    desired_pos_gazebo_sub = nh.subscribe("/gazebo_conversion/mavros/local_position/pose", 10, getDesiredGZPoseCallback);
-    desired_pos_mavros_pub = nh.advertise<geometry_msgs::PoseStamped>("/mavros/local_position/pose", 10);
+    desired_pos_gazebo_sub = nh.subscribe("/gazebo_conversion/mavros/setpoint_position/local", 10, getDesiredGZPoseCallback);
+    desired_pos_mavros_pub = nh.advertise<geometry_msgs::PoseStamped>("/mavros/setpoint_position/local", 10);
 
 
     ros::Rate rate(10);
