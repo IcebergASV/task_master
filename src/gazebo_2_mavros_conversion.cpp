@@ -5,15 +5,7 @@
 ros::Subscriber desired_pos_gazebo_sub;
 ros::Publisher desired_pos_mavros_pub;
 
-geometry_msgs::PoseStamped desired_pose_mavros;
-geometry_msgs::PoseStamped desired_pose_gazebo;
-
 std::string TAG = "GZtoMR_CONVERSION: ";
-
-void getDesiredGZPoseCallback(const geometry_msgs::PoseStamped& msg){
-
-    desired_pose_gazebo = msg;
-}
 
 geometry_msgs::Point convertPosition(geometry_msgs::Point gazebo_position)
 {
@@ -79,6 +71,12 @@ geometry_msgs::PoseStamped convertGazeboToMavrosPose(geometry_msgs::PoseStamped 
     return mavros_pose;
 }
 
+void getDesiredGZPoseCallback(const geometry_msgs::PoseStamped& msg){
+
+    geometry_msgs::PoseStamped desired_pose_mavros = convertGazeboToMavrosPose(msg);
+    desired_pos_mavros_pub.publish(desired_pose_mavros);
+}
+
 int main(int argc, char** argv) {
 
     ros::init(argc, argv, "gazebo_2_mavros_conversion");
@@ -92,9 +90,6 @@ int main(int argc, char** argv) {
 
     ros::Rate rate(10);
     while (ros::ok()) {
-
-        desired_pose_mavros = convertGazeboToMavrosPose(desired_pose_gazebo);
-        desired_pos_mavros_pub.publish(desired_pose_mavros);
 
         ros::spinOnce();
         rate.sleep();

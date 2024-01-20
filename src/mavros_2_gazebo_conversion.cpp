@@ -5,15 +5,7 @@
 ros::Subscriber currentPosMavRos;
 ros::Publisher currentPosGazebo;
 
-geometry_msgs::PoseStamped current_pose_mavros;
-geometry_msgs::PoseStamped current_pose_gazebo;
-
 std::string TAG = "MRtoGZCONVERSION: ";
-
-void get_current_pos(const geometry_msgs::PoseStamped& msg){
-
-    current_pose_mavros = msg;
-}
 
 geometry_msgs::Point convertPosition(geometry_msgs::Point mavros_position)
 {
@@ -79,6 +71,12 @@ geometry_msgs::PoseStamped convertMavrosToGazeboPose(geometry_msgs::PoseStamped 
     return gazebo_pose;
 }
 
+void localPositionCallback(const geometry_msgs::PoseStamped& msg){
+
+    geometry_msgs::PoseStamped current_pose_gazebo = convertMavrosToGazeboPose(msg);
+    currentPosGazebo.publish(current_pose_gazebo);
+}
+
 int main(int argc, char** argv) {
 
     ros::init(argc, argv, "mavros_2_gazebo_conversion");
@@ -86,14 +84,11 @@ int main(int argc, char** argv) {
         ros::console::notifyLoggerLevelsChanged();
     ros::NodeHandle nh;
 
-    currentPosMavRos = nh.subscribe("/mavros/local_position/pose", 10, get_current_pos);
+    currentPosMavRos = nh.subscribe("/mavros/local_position/pose", 10, localPositionCallback);
     currentPosGazebo = nh.advertise<geometry_msgs::PoseStamped>("gazebo_pose", 10);
 
     ros::Rate rate(10);
     while (ros::ok()) {
-
-        current_pose_gazebo = convertMavrosToGazeboPose(current_pose_mavros);
-        currentPosGazebo.publish(current_pose_gazebo);
 
         ros::spinOnce();
         rate.sleep();
