@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
 
     TaskController task_controller;
 
-    task_controller.setDefaultStatus(task_master::Task::NAVIGATION_CHANNEL);
+    task_controller.setDefaultStatus(task_master::Task::SPEED_RUN);
     
     task_controller.spin();
 
