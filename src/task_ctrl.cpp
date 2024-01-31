@@ -2,16 +2,21 @@
 #include <task_master/TaskStatus.h>
 #include <task_master/Task.h>
 #include <vector>
+#include <map>
 
 class TaskController {
 public:
-    TaskController(): nh_(""), private_nh_("~")
+    TaskController(): nh_(""), private_nh_("~"), current_task_num_(0)
     {
         // Params
-        private_nh_.param<double>("navigation_channel_order", nav_channel_order_p, 1);
-        private_nh_.param<double>("speed_run_order", speed_run_order_p, 0);
-        private_nh_.param<double>("docking_order", docking_order_p, 0);
-        private_nh_.param<double>("mag_route_order", mag_route_order_p, 0);
+        if (private_nh_.getParam("task_execution_order", task_execution_order_p))
+        {
+            ROS_INFO_STREAM(TAG << "task_execution_order param set");
+        }
+        else
+        {
+            ROS_ERROR_STREAM(TAG << "Failed to load task_execution_order from the parameter server.");
+        }
 
         // ROS subscribers
 
@@ -23,9 +28,6 @@ public:
 
         // task_to_execute determines which task should be running
         task_to_execute_ = nh_.advertise<task_master::Task>("task_to_execute", 10);
-
-        // initialize task order vector
-        task_execution_order_.assign(4, task_master::Task::TASK_NOT_SET);
     }
 
     void spin() {
@@ -36,6 +38,48 @@ public:
             rate.sleep();
         }
     }
+    
+    void sortTasks()
+    {
+        // get the tasks to execute
+        for (const auto& task : task_execution_order_p) {
+            if (task.second != 0) {
+                //tasksToExecute.push_back(task);
+                task_master::Task new_task;
+                if (task.first == "navigation_channel")
+                {
+                    new_task.current_task = task_master::Task::NAVIGATION_CHANNEL;
+                    orderedTasksToExecute_.push_back(new_task);
+                }
+                else if (task.first == "speed_run")
+                {
+                    new_task.current_task = task_master::Task::SPEED_RUN;
+                    orderedTasksToExecute_.push_back(new_task);
+                }
+                else if (task.first == "docking")
+                {
+                    new_task.current_task = task_master::Task::DOCKING;
+                    orderedTasksToExecute_.push_back(new_task);
+                }
+                else if (task.first == "mag_route")
+                {
+                    new_task.current_task = task_master::Task::MAG_ROUTE;
+                    orderedTasksToExecute_.push_back(new_task);
+                }
+                else 
+                {
+                    ROS_WARN_STREAM(TAG << "invalid task set in task execution order: " << task.first);
+                }
+
+            }
+        }
+    }
+
+    void setTask(int task_num)
+    {
+        current_task_.current_task = task_num;
+        ROS_INFO_STREAM (TAG << "Task set to " << task_num);
+    }
 
 private:
 
@@ -45,10 +89,11 @@ private:
     ros::Publisher task_to_execute_;
 
     task_master::Task current_task_;
-    std::vector<task_master::Task> task_execution_order_;
+    std::vector<task_master::Task> orderedTasksToExecute_;
     int current_task_num_;
     std::string TAG = "TASK_CONTROLLER: ";
 
+    std::map<std::string, int> task_execution_order_p;
     int nav_channel_order_p;
     int speed_run_order_p;
     int docking_order_p;
@@ -59,61 +104,35 @@ private:
     //    ROS_INFO_STREAM(TAG << "Set default task and task status.");
     //}
 
-    void setTask(int task_number)
+    void setNextTask()
     {
-        current_task_.current_task = task_execution_order_[task_number];
-        
-
+        current_task_num_++;
+        current_task_ = orderedTasksToExecute_[current_task_num_];
     }
-
-    void setTask(task_master::Task task)
-    {
-        current_task_.current_task = task;
-        ROS_INFO_STREAM (TAG << "Task set to " << task);
-
-    }
-
-    void mapTasks()
-    {
-        std::vector<int> task_orders = {nav_channel_order_p, speed_run_order_p, docking_order_p, mag_route_order_p};
-
-        // Ensure task orders are valid 
-        for (int i : mag_route_order_p)
-        {
-            if (i > 4 || i < 0)
-            {
-                ROS_WARN_STREAM(TAG << "Invalid task order number: " << i);
-            }
-        }
-
-        // Set the task order
-        if(nav_channel_order_p != 0) {task_execution_order_[nav_channel_order_p-1] = task_master::Task::NAVIGATION_CHANNEL;}
-        if(speed_run_order_p != 0) {task_execution_order_[speed_run_order_p-1] = task_master::Task::SPEED_RUN;};
-        if (docking_order_p != 0 ) {task_execution_order_[docking_order_p-1] = task_master::Task::DOCKING;}
-        if (mag_route_order_p != 0) {task_execution_order_[mag_route_order_p-1] = task_master::Task::MAG_ROUTE;}
-
-        // Remove any unset values in the task execution order array
-        task_execution_order_.erase(std::remove_if(task_execution_order_.begin(), task_execution_order_.end(), [](task_master::Task task) { return task == task_master::Task::TASK_NOT_SET; }), task_execution_order_.end());
-
-        ROS_INFO_STREAM(TAG << "Task execution order: " << task_execution_order_ );
-        return;
-    }
-
 
     void taskStatusCallback(const task_master::TaskStatus msg) {
         ROS_DEBUG_STREAM(TAG << "taskStatusCallback");
-        //current_status_ = msg;
-        if(msg.status == task_master::TaskStatus::FAILED || msg.status == task_master::TaskStatus::COMPLETE) {
-            // when task fails or completes, we publish task_not_set
-            current_task_.current_task = task_master::Task::TASK_NOT_SET;
-            if (msg.status == task_master::TaskStatus::FAILED) {
-                ROS_INFO_STREAM( TAG << "Task failed.");
+        if(msg.task.current_task == current_task_.current_task &&  msg.status == task_master::TaskStatus::COMPLETE)
+        {
+            if(current_task_num_ < orderedTasksToExecute_.size()-1)
+            {
+                ROS_INFO_STREAM(TAG << "Task: " << msg.task.current_task << " complete");
+                setNextTask();
             }
-            else {
-                ROS_INFO_STREAM(TAG << "Task completed.");
+            else
+            {
+                setTask(task_master::Task::TASK_NOT_SET);
+                ROS_INFO_STREAM(TAG << "All set tasks complete!");
             }
         }
-
+        else
+        {
+            if(msg.task.current_task == current_task_.current_task && msg.status == task_master::TaskStatus::FAILED) //TODO add logic for recovering from a failed task
+            {
+                ROS_ERROR_STREAM(TAG << "Task: " << msg.task.current_task << " failed, setting task_to_execute to TASK_NOT_SET");
+                setTask(task_master::Task::TASK_NOT_SET);
+            }
+        }
     }
 };
 
@@ -125,9 +144,9 @@ int main(int argc, char** argv) {
 
     TaskController task_controller;
 
-    task_controller.mapTasks();
+    task_controller.sortTasks();
 
-    task_controller.settask(task_master::Task::TASK_NOT_SET);
+    task_controller.setTask(task_master::Task::TASK_NOT_SET);
     
     task_controller.spin();
 
