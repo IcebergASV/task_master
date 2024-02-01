@@ -72,13 +72,19 @@ public:
                 }
 
             }
+
+            
+        }
+
+        if (orderedTasksToExecute_.size() <= 0){
+            ROS_WARN_STREAM(TAG << "No tasks set to execute");
         }
     }
 
     void setTask(int task_num)
     {
         current_task_.current_task = task_num;
-        ROS_INFO_STREAM (TAG << "Task set to " << task_num);
+        ROS_INFO_STREAM (TAG << "Task set to " << taskNumToString(task_num));
     }
 
 private:
@@ -104,42 +110,100 @@ private:
     //    ROS_INFO_STREAM(TAG << "Set default task and task status.");
     //}
 
+    // for printing task name for logging
+    std::string taskNumToString(uint8_t task_num)
+    {
+        std::string task_name_string;
+
+        switch(task_num)
+        {
+            case task_master::Task::TASK_NOT_SET:
+            {
+                task_name_string = "task_not_set";
+                break;
+            }
+            case task_master::Task::NAVIGATION_CHANNEL:
+            {
+                task_name_string = "navigation_channel";
+                break;
+            }
+            case task_master::Task::MAG_ROUTE:
+            {
+                task_name_string = "mag_route";
+                break;
+            }
+            case task_master::Task::DOCKING:
+            {
+                task_name_string = "docking";
+                break;
+            }
+            case task_master::Task::SPEED_RUN:
+            {
+                task_name_string = "speed run";
+                break;
+            }
+            default:
+            {
+                ROS_WARN_STREAM(TAG << "Invalid task number for taskNumToString conversion: " << task_num);
+                break;
+            }
+
+            
+        }
+        return task_name_string;
+    }
+
     void setNextTask()
     {
         current_task_num_++;
         current_task_ = orderedTasksToExecute_[current_task_num_];
+        ROS_INFO_STREAM(TAG << "setNextTask: currrent_task = " << " and " << current_task_.current_task << " and " << current_task_  << "hefsdf" << taskNumToString(current_task_.current_task));
     }
 
     void taskStatusCallback(const task_master::TaskStatus msg) {
         ROS_DEBUG_STREAM(TAG << "taskStatusCallback");
-        if(msg.task.current_task == current_task_.current_task &&  msg.status == task_master::TaskStatus::COMPLETE)
+        if (orderedTasksToExecute_.size() <= 0)
         {
-            if(current_task_num_ < orderedTasksToExecute_.size()-1)
-            {
-                ROS_INFO_STREAM(TAG << "Task: " << msg.task.current_task << " complete");
-                setNextTask();
-            }
-            else
-            {
-                setTask(task_master::Task::TASK_NOT_SET);
-                ROS_INFO_STREAM(TAG << "All set tasks complete!");
-            }
+            ROS_WARN_STREAM(TAG << "No tasks set to execute");
+            setTask(task_master::Task::TASK_NOT_SET);
         }
         else
         {
-            if(msg.task.current_task == current_task_.current_task && msg.status == task_master::TaskStatus::FAILED) //TODO add logic for recovering from a failed task
+            if (current_task_num_ == 0)
+                {
+                    setNextTask();
+                }
+
+            if(msg.task.current_task == current_task_.current_task &&  msg.status == task_master::TaskStatus::COMPLETE)
             {
-                ROS_ERROR_STREAM(TAG << "Task: " << msg.task.current_task << " failed, setting task_to_execute to TASK_NOT_SET");
-                setTask(task_master::Task::TASK_NOT_SET);
+                if(current_task_num_ < orderedTasksToExecute_.size()-1)
+                {
+                    ROS_INFO_STREAM(TAG << "Task: " << taskNumToString(msg.task.current_task) << " complete");
+                    setNextTask();
+                }
+                else
+                {
+                    setTask(task_master::Task::TASK_NOT_SET);
+                    ROS_INFO_STREAM(TAG << "All set tasks complete!");
+                }
+            }
+            else
+            {
+                if(msg.task.current_task == current_task_.current_task && msg.status == task_master::TaskStatus::FAILED) //TODO add logic for recovering from a failed task
+                {
+                    ROS_ERROR_STREAM(TAG << "Task: " << taskNumToString(msg.task.current_task) << " failed, setting task_to_execute to TASK_NOT_SET");
+                    setTask(task_master::Task::TASK_NOT_SET);
+                }
             }
         }
+ 
     }
 };
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "task_ctrl_node");
 
-    if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
+    if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Info))
         ros::console::notifyLoggerLevelsChanged();
 
     TaskController task_controller;
