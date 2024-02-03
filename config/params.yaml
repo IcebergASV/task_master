@@ -1,0 +1,8 @@
+# define task execution and order
+# 0 means the task won't run, and then tasks are ordered starting with 1
+# Ensure that no tasks are set to the same number (except 0)
+task_execution_order:
+  navigation_channel:     1
+  speed_run:              2
+  docking:                0
+  mag_route:              0
