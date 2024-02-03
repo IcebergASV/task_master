@@ -41,39 +41,52 @@ public:
     
     void sortTasks()
     {
-        // get the tasks to execute
-        for (const auto& task : task_execution_order_p) {
-            if (task.second != 0) {
-                //tasksToExecute.push_back(task);
-                task_master::Task new_task;
-                if (task.first == "navigation_channel")
-                {
-                    new_task.current_task = task_master::Task::NAVIGATION_CHANNEL;
-                    orderedTasksToExecute_.push_back(new_task);
-                }
-                else if (task.first == "speed_run")
-                {
-                    new_task.current_task = task_master::Task::SPEED_RUN;
-                    orderedTasksToExecute_.push_back(new_task);
-                }
-                else if (task.first == "docking")
-                {
-                    new_task.current_task = task_master::Task::DOCKING;
-                    orderedTasksToExecute_.push_back(new_task);
-                }
-                else if (task.first == "mag_route")
-                {
-                    new_task.current_task = task_master::Task::MAG_ROUTE;
-                    orderedTasksToExecute_.push_back(new_task);
-                }
-                else 
-                {
-                    ROS_WARN_STREAM(TAG << "invalid task set in task execution order: " << task.first);
-                }
+        std::vector<std::pair<std::string, int>> sorted_tasks;
 
+        // Exclude items with 0 for the value
+        for (const auto& entry : task_execution_order_p) {
+            if (entry.second != 0) {
+                sorted_tasks.push_back(entry);
             }
+        }
 
-            
+        // Sort the tasks by values, least to greatest
+        std::sort(sorted_tasks.begin(), sorted_tasks.end(), [](const auto& a, const auto& b) {
+            return a.second < b.second;
+        });
+
+        task_master::Task new_task;
+
+        for (const auto& task : sorted_tasks) {
+            if (task.first == "navigation_channel")
+            {
+                new_task.current_task = task_master::Task::NAVIGATION_CHANNEL;
+                orderedTasksToExecute_.push_back(new_task);
+                ROS_INFO_STREAM(TAG << "Adding nav channel to execute list");
+            }
+            else if (task.first == "speed_run")
+            {
+                new_task.current_task = task_master::Task::SPEED_RUN;
+                orderedTasksToExecute_.push_back(new_task);
+                ROS_INFO_STREAM(TAG << "Adding speed run to execute list");
+            }
+            else if (task.first == "docking")
+            {
+                new_task.current_task = task_master::Task::DOCKING;
+                orderedTasksToExecute_.push_back(new_task);
+                ROS_INFO_STREAM(TAG << "Adding docking to execute list");
+            }
+            else if (task.first == "mag_route")
+            {
+                new_task.current_task = task_master::Task::MAG_ROUTE;
+                orderedTasksToExecute_.push_back(new_task);
+                ROS_INFO_STREAM(TAG << "Adding mag route to execute list");
+            }
+            else 
+            {
+                ROS_WARN_STREAM(TAG << "invalid task set in task execution order: " << task.first);
+            }
+                       
         }
 
         if (orderedTasksToExecute_.size() <= 0){
@@ -104,11 +117,6 @@ private:
     int speed_run_order_p;
     int docking_order_p;
     int mag_route_order_p;
-
-    //void setDefaultStatus(int new_task) {
-    //    current_task_.current_task = new_task;
-    //    ROS_INFO_STREAM(TAG << "Set default task and task status.");
-    //}
 
     // for printing task name for logging
     std::string taskNumToString(uint8_t task_num)
@@ -155,9 +163,10 @@ private:
 
     void setNextTask()
     {
-        current_task_num_++;
+        ROS_DEBUG_STREAM(TAG << "Current task num: " << current_task_num_);
         current_task_ = orderedTasksToExecute_[current_task_num_];
-        ROS_INFO_STREAM(TAG << "setNextTask: currrent_task = " << " and " << current_task_.current_task << " and " << current_task_  << "hefsdf" << taskNumToString(current_task_.current_task));
+        ROS_INFO_STREAM(TAG << "Current task set to execute: " << taskNumToString(current_task_.current_task));
+        current_task_num_++;
     }
 
     void taskStatusCallback(const task_master::TaskStatus msg) {

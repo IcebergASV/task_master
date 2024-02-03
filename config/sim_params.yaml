@@ -3,6 +3,6 @@
 # Ensure that no tasks are set to the same number (except 0)
 task_execution_order:
   navigation_channel:     1
-  speed_run:              0
+  speed_run:              2
   docking:                0
   mag_route:              0
