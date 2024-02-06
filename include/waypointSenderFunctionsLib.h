@@ -2,7 +2,6 @@
 #define WAYPOINTSENDERFUNCTIONSLIB_H
 
 #include <nav_msgs/Odometry.h>
-#include <geometry_msgs/Pose.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <ros/ros.h>
 
