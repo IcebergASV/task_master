@@ -1,0 +1,8 @@
+ssh icebergasv@10.10.0.5
+
+roslaunch task_master master_launch.launch
+rostopic echo /prop_angle_range
+rostopic echo /prop_polar_coords
+rostopic echo /prop_array
+rostopic echo /mavros/local_position/pose
+rostopic echo /mavros/setpoint_position/local
