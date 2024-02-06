@@ -18,6 +18,15 @@ public:
             ROS_ERROR_STREAM(TAG << "Failed to load task_execution_order from the parameter server.");
         }
 
+        if (private_nh_.getParam("task_start_point", task_start_point_p))
+        {
+            ROS_INFO_STREAM(TAG << "task_start_point param set");
+        }
+        else
+        {
+            ROS_ERROR_STREAM(TAG << "Failed to load task_start_point from the parameter server.");
+        }
+
         // ROS subscribers
 
         // task_status tells us if we are completed the current task or not
@@ -117,6 +126,17 @@ private:
     int speed_run_order_p;
     int docking_order_p;
     int mag_route_order_p;
+
+    std::map<std::string, int> task_start_point_p;
+    float nav_channel_lat_p;
+    float nav_channel_lon_p;
+    float speed_run_lat_p;
+    float speed_run_lon_p;
+    float docking_lat_p;
+    float docking_lon_p;
+    float mag_route_lat_p;
+    float mag_route_lon_p;
+    
 
     // for printing task name for logging
     std::string taskNumToString(uint8_t task_num)

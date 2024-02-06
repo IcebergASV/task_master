@@ -6,3 +6,14 @@ task_execution_order:
   speed_run:              2
   docking:                0
   mag_route:              0
+
+
+task_start_points:
+  navigation_channel_lat:     1
+  navigation_channel_lon:
+  speed_run_lat:              2
+  speed_run_lon:
+  docking_run_lat:            0
+  docking_run_lon:
+  mag_route_lat:              0
+  mag_route_lon:             0 
