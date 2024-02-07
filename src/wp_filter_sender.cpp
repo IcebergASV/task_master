@@ -172,9 +172,6 @@ int main(int argc, char** argv)
 	// Wait for used to switch to mode GUIDED
 	wait4Guided();
 
-	// Arm boat 
-	arm();
-
 	ros::Rate rate(2.0);
 
 	ROS_INFO("Starting mission");
