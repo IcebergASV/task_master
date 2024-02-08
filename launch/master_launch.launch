@@ -1,17 +1,11 @@
 <launch>
-    <include file="$(find task_master)/launch/task_master.launch"></include>
-    <include file="$(find prop_mapper)/launch/prop_mapper.launch"></include>
+
+    <arg name="record_rosbags" value="true"></arg>
+    <include file="$(find task_master)/launch/task_master.launch">
+        <arg name="record_rosbag" value="$(record_rosbags)"/>
+    </include>
+    <include file="$(find prop_mapper)/launch/prop_mapper.launch">
+        <arg name="record_rosbag" value="$(record_rosbags)"/>
+    </include>
     <include file="$(find nav_channel)/launch/nav_channel.launch"></include>
-    <node pkg="rosbag" type="record" name="iceberg"
-            args="record -o /home/icebergasv/roboboat_2024/rosbags/iceberg_code 
-                /completed_props
-                /prop_angle_range
-                /prop_array
-                /prop_polar_coords
-                /task_goal_position
-                /task_status
-                /task_to_execute
-                /yolov5/BoundingBoxes
-                " 
-            />
 </launch>

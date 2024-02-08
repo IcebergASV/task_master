@@ -1,7 +1,17 @@
 <launch>
+
+    <arg name="record_rosbag" default="true"/>
+
     <node pkg="task_master" type="task_ctrl" name="task_ctrl_node" output="screen">
         <rosparam file="$(find task_master)/config/params.yaml" command="load" />
     </node>
     <node pkg="task_master" type="wp_filter_sender" name="wp_filter_sender" output="screen"/>
+    <node pkg="rosbag" type="record" name="iceberg" if="$(arg record_rosbag)"
+            args="record -o /home/icebergasv/roboboat_2024/rosbags/iceberg_code 
+                /task_status
+                /task_goal_position
+                /task_to_execute
+                ">
+    </node>
 </launch>
 
