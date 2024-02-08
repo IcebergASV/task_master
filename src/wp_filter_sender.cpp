@@ -46,7 +46,6 @@ void state_cb(const mavros_msgs::State::ConstPtr& msg)
 // set goal pose 
 void goal_pose(const task_master::TaskGoalPosition::ConstPtr& msg){
 
-	ROS_DEBUG_STREAM(TAG << "task goal pos" << msg);
 	// Check if msg is from correct task 
 	if(current_task_to_execute == msg->task.current_task){
 		goal_pos.x = msg->point.x;
@@ -54,6 +53,11 @@ void goal_pose(const task_master::TaskGoalPosition::ConstPtr& msg){
 		goal_pos.z = msg->point.z;
 		goal_pos.psi = 0.0;
 	}
+
+	desired_waypoint = set_destination(goal_pos.x, goal_pos.y, goal_pos.psi);
+	ROS_DEBUG_STREAM(TAG << "About to publish desired coord x: " << desired_waypoint.pose.position.x << ", y:" << desired_waypoint.pose.position.y);
+	local_pos_pub.publish(desired_waypoint);
+
  }
 
 // Get current task to execute 
@@ -180,9 +184,6 @@ int main(int argc, char** argv)
 	{
 		ros::spinOnce();
 		rate.sleep();
-		desired_waypoint = set_destination(goal_pos.x, goal_pos.y, goal_pos.psi);
-		ROS_DEBUG_STREAM(TAG << " about to publish");
-		local_pos_pub.publish(desired_waypoint);
 	}
 	return 0;
 }
