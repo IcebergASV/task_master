@@ -1,0 +1,6 @@
+<launch>
+
+    <node pkg="task_master" type="mavros_wp_sender" name="mavros_wp_sender" output="screen">
+        <rosparam file="$(find task_master)/config/waypoints.yaml" command="load" />
+    </node>
+</launch>

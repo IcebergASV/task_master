@@ -1,0 +1,24 @@
+waypoints:
+  - seq: 0
+    frame: 1
+    command: 16
+    autocontinue: 0
+    param1: 0.0
+    param2: 0.0
+    param3: 0.0
+    param4: 0.0
+    x_lat: 27.3746247
+    y_long: -82.4523753
+    z_alt: 28.050000
+  - seq: 1
+    frame: 0
+    command: 3
+    autocontinue: 0
+    param1: 0.0
+    param2: 0.0
+    param3: 0.0
+    param4: 0.0
+    x_lat: 27.37425520
+    y_long: -82.45287340
+    z_alt: 100.000000
+  # Add more waypoints as needed
