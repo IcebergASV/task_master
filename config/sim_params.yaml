@@ -3,6 +3,39 @@
 # Ensure that no tasks are set to the same number (except 0)
 task_execution_order:
   navigation_channel:     1
-  speed_run:              2
+  speed_run:              0
   docking:                0
   mag_route:              0
+  return_home:            0
+
+navigation_channel_start_point:
+  lat_1: 1.0
+  lon_1: 1.0
+  lat_2: 1.0
+  lon_2: 1.0
+
+speed_run_start_point:
+  lat_1: -35.3629
+  lon_1: 149.165
+  lat_2: -35.3630
+  lon_2: 149.166
+
+docking_start_point:
+  lat_1: 1.0
+  lon_1: 1.0
+  lat_2: 1.0
+  lon_2: 1.0
+
+mag_route_start_point:
+  lat_1: 1.0
+  lon_1: 1.0
+  lat_2: 1.0
+  lon_2: 1.0
+
+return_home_start_point:
+  lat_1: 1.0
+  lon_1: 1.0
+  lat_2: 1.0
+  lon_2: 1.0
+
+waypoint_range: 0.000001 #lat/long - acceptable range for reaching waypoints
