@@ -8,4 +8,5 @@
         <arg name="record_rosbag" value="$(arg record_rosbags)"/>
     </include>
     <include file="$(find nav_channel)/launch/nav_channel.launch"></include>
+    <include file="$(find speed_challenge)/launch/speed_challenge.launch"></include>
 </launch>
