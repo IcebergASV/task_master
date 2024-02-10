@@ -34,20 +34,23 @@ public:
         position_diff_pub_ = nh_.advertise<geometry_msgs::PoseStamped>("/position_diff", 10);
 
         // Set publishing rate
-        publishing_rate_ = nh_.param<double>("publishing_rate", publishing_freq_p); // Default rate is 10 Hz
-        publish_timer_ = nh_.createTimer(ros::Duration(1.0 / publishing_rate_), &SetpointPublisher::publishTimerCallback, this);
+        publishing_rate_ = nh_.param<double>("publishing_rate", publishing_freq_p); 
+        publish_timer_ = nh_.createTimer(ros::Duration(1.0 /publishing_freq_p), &SetpointPublisher::publishTimerCallback, this);
     }
 
     void sendWP()
     {
 
-        ROS_INFO_STREAM("Sending setpoint: (" <<  setpoint_msg_.pose.position.x << ", " << setpoint_msg_.pose.position.y << ")");
-        setpoint_pub_.publish(setpoint_msg_);
+        if (pose_set_ && hdg_set_)
+        {
+            ROS_INFO_STREAM("Sending setpoint: (" <<  setpoint_msg_.pose.position.x << ", " << setpoint_msg_.pose.position.y << ")");
+            setpoint_pub_.publish(setpoint_msg_);
+        }
     }
 
     // for low frequency
     void publishTimerCallback(const ros::TimerEvent&) {
-        if (low_freq_cont_p && count_ < num_setpoints_p && current_state_.mode == "GUIDED"){
+        if (low_freq_cont_p || low_freq_disc_p && count_ < num_setpoints_p && current_state_.mode == "GUIDED"){
             if (pose_set_ && hdg_set_ && setpnt_msg_) {
                 // Publish setpoint
                 sendWP();
