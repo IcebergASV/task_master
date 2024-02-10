@@ -1,0 +1,10 @@
+
+dist: 3 # setpoint distance in meters
+num_setpoints: 6 # how many times to send low freq setpoints for low_freq_disc mode
+publishing_freq: 1 # freq for low freq modes
+
+# Publishing modes
+low_freq_cont: false
+low_freq_disc: false
+spam: false
+single: true

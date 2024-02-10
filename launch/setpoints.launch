@@ -1,0 +1,5 @@
+<launch>
+    <node pkg="task_master" type="setpoint_publisher" name="setpoint_publisher" output="screen">
+        <rosparam file="$(find task_master)/config/setpoint_params.yaml" command="load" />
+    </node>
+</launch>

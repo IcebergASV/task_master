@@ -172,6 +172,10 @@ add_executable(gazebo_2_mavros_conversion src/gazebo_2_mavros_conversion.cpp)
 target_link_libraries(gazebo_2_mavros_conversion ${catkin_LIBRARIES})
 add_dependencies(gazebo_2_mavros_conversion ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
 
+add_executable(setpoint_publisher src/setpoint_publisher.cpp)
+target_link_libraries(setpoint_publisher ${catkin_LIBRARIES})
+add_dependencies(setpoint_publisher ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
+
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
