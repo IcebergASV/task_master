@@ -1,6 +1,6 @@
 <launch>
 
-    <arg name="record_rosbag" default="true"/>
+    <arg name="record_rosbag" default="false"/>
 
     <node pkg="task_master" type="task_ctrl" name="task_ctrl_node" output="screen">
         <rosparam file="$(find task_master)/config/params.yaml" command="load" />
