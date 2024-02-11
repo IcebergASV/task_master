@@ -3,6 +3,8 @@
 #include <task_master/Task.h>
 #include <vector>
 #include <map>
+#include <mavros_msgs/SetMode.h>
+
 
 class TaskController {
 public:
@@ -28,6 +30,9 @@ public:
 
         // task_to_execute determines which task should be running
         task_to_execute_ = nh_.advertise<task_master::Task>("task_to_execute", 10);
+
+        // ROS services
+        state_service_ = nh_.serviceClient<mavros_msgs::SetMode>("/mavros/set_mode");
     }
 
     void spin() {
@@ -118,6 +123,8 @@ private:
     int docking_order_p;
     int mag_route_order_p;
 
+    ros::ServiceClient state_service_;
+
     // for printing task name for logging
     std::string taskNumToString(uint8_t task_num)
     {
@@ -192,6 +199,15 @@ private:
                 }
                 else
                 {
+                    ROS_INFO_STREAM(TAG << "Attempting change to auto mode");
+                    mavros_msgs::SetMode mode;
+                    mode.request.custom_mode = "AUTO";
+                    if (state_service_.call(mode)) {
+                        ROS_INFO_STREAM(TAG << "Entered auto mode");
+                    }
+                    else {
+                        ROS_INFO_STREAM(TAG << "Failed to enter auto mode");
+                    }
                     setTask(task_master::Task::TASK_NOT_SET);
                     ROS_INFO_STREAM(TAG << "All set tasks complete!");
                 }
