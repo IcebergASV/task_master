@@ -9,4 +9,18 @@
     </include>
     <include file="$(find nav_channel)/launch/nav_channel.launch"></include>
     <include file="$(find speed_challenge)/launch/speed_challenge.launch"></include>
+
+    <node pkg="rosbag" type="record" name="task_master_record" if="$(arg record_rosbag)"
+            args="record -o /home/icebergasv/roboboat_2024/rosbags/iceberg_code 
+                /task_status
+                /task_goal_position
+                /task_to_execute
+                /completed_props
+                /prop_angle_range
+                /prop_array
+                /prop_polar_coords
+                ">
+    </node>
+
+
 </launch>

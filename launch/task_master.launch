@@ -6,12 +6,6 @@
         <rosparam file="$(find task_master)/config/params.yaml" command="load" />
     </node>
     <node pkg="task_master" type="wp_filter_sender" name="wp_filter_sender" output="screen"/>
-    <node pkg="rosbag" type="record" name="task_master_record" if="$(arg record_rosbag)"
-            args="record -o /home/icebergasv/roboboat_2024/rosbags/iceberg_code 
-                /task_status
-                /task_goal_position
-                /task_to_execute
-                ">
-    </node>
+
 </launch>
 
