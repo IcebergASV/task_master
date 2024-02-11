@@ -1,6 +1,6 @@
 <launch>
 
-    <arg name="record_rosbags" default="true"/>
+    <arg name="record_rosbags" default="false"/>
     <include file="$(find task_master)/launch/task_master.launch">
         <arg name="record_rosbag" value="$(arg record_rosbags)"/>
     </include>
